@@ -1,16 +1,19 @@
 ﻿using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
+
 namespace AzureSearchIndex
 {
     class Program
     {
         static string searchServiceName = ConfigurationManager.AppSettings["StephenSearchName"];
         static string searchServiceAdminKey = ConfigurationManager.AppSettings["StephenSearchServiceAdminKey"];
-        static string searchServiceQueryKey = ConfigurationManager.AppSettings["StephenSearchServiceQueryKey"];
+        //static string searchServiceQueryKey = ConfigurationManager.AppSettings["StephenSearchServiceQueryKey"];
 
         static void Main(string[] args)
         {
@@ -41,6 +44,17 @@ namespace AzureSearchIndex
 
             string line;
 
+            //JObject o1 = JObject.Parse(File.ReadAllText("accounts.json"));
+
+            //// read JSON directly from a file
+            //using (StreamReader file = File.OpenText("accounts.json"))
+            //using (JsonTextReader reader = new JsonTextReader(file))
+            //{
+            //    JObject o2 = (JObject)JToken.ReadFrom(reader);
+            //    Account account = o2.ToObject<Account>();
+            //    actions.Add(IndexAction.Upload(account));
+            //}
+
             using (System.IO.StreamReader file = new System.IO.StreamReader("accounts.json"))
             {
                 while ((line = file.ReadLine()) != null)
@@ -53,7 +67,7 @@ namespace AzureSearchIndex
             }
 
             var batch = IndexBatch.New(actions);
-
+            Console.WriteLine("Indexed......");
             try
             {
                 indexClient.Documents.Index(batch);
